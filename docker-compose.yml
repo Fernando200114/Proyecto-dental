@@ -1,0 +1,50 @@
+services:
+  db:
+    image: mysql:8
+    container_name: dental_mysql
+    restart: always
+    env_file:
+      - .env
+    # Nota: Ya no necesitas la sección 'environment' repetida aquí 
+    # porque env_file lee MYSQL_DATABASE, etc., desde tu archivo .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    container_name: proyecto-dental-web
+    # Se recomienda esperar un poco antes de migrar para asegurar que el socket esté listo
+    command: sh -c "sleep 5 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: dental_pma
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

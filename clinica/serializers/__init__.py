@@ -1,0 +1,4 @@
+from .pacientesSerializers import PacientesSerializer
+from .citasSerializers import CitasSerializer
+from .tratamientosSerializers import TratamientosSerializer
+from .historialSerializers import HistorialSerializer

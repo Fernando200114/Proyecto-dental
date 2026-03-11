@@ -1,0 +1,9 @@
+django 
+python-dotenv 
+mysqlclient
+
+djangorestframework
+django-filter
+django-cors-headers
+djangorestframework-simplejwt
+twilio==8.0.0
