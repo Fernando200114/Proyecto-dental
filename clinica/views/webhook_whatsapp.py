@@ -20,8 +20,15 @@ def whatsapp_webhook(request):
     mensaje = request.POST.get("Body", "")
 
     # Limpiamos el número
+   # Limpiamos el número
     numero = numero.replace("whatsapp:", "")
 
+    # convertir formato internacional a formato Ecuador
+    if numero.startswith("+593"):
+        numero = "0" + numero[4:]
+
+    # Buscar paciente por número
+ 
     # Buscar paciente por número
     try:
         paciente = Pacientes.objects.get(telefono=numero)
