@@ -5,6 +5,9 @@ from clinica.models.pacientes import Pacientes
 from clinica.models.citas import Citas
 import re
 from datetime import datetime
+from twilio.twiml.messaging_response import MessagingResponse
+from django.http import HttpResponse
+
 
 # Decorador para permitir recibir POST de servicios externos (Twilio)
 @csrf_exempt
@@ -78,4 +81,7 @@ def whatsapp_webhook(request):
     # Respuesta de confirmación
     respuesta = f"Hola {paciente.nombre}, tu cita ha sido agendada para el {fecha.strftime('%d/%m/%Y')} a las {hora.strftime('%H:%M')}. Estado: {estado}"
 
-    return JsonResponse({"mensaje": respuesta})
+    resp = MessagingResponse()
+    resp.message(respuesta)
+
+    return HttpResponse(str(resp), content_type="application/xml")
