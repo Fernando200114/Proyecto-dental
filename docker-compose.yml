@@ -5,8 +5,6 @@ services:
     restart: always
     env_file:
       - .env
-    # Nota: Ya no necesitas la sección 'environment' repetida aquí 
-    # porque env_file lee MYSQL_DATABASE, etc., desde tu archivo .env
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
@@ -20,8 +18,9 @@ services:
   web:
     build: .
     container_name: proyecto-dental-web
-    # Se recomienda esperar un poco antes de migrar para asegurar que el socket esté listo
-    command: sh -c "sleep 5 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    restart: always  # <-- IMPORTANTE: Agrégale esto para que si falla, reviva solo
+    # Agregamos --noreload para ahorrar RAM en Azure y evitar el error 137
+    command: sh -c "sleep 5 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000 --noreload"
     volumes:
       - .:/app
     ports:
